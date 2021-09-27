@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <dimen name="margin0X">4dp</dimen>
+    <dimen name="margin1X">8dp</dimen>
+    <dimen name="margin2X">16dp</dimen>
+    <dimen name="margin3X">24dp</dimen>
+    <dimen name="margin4X">32dp</dimen>
+    <dimen name="margin5X">40dp</dimen>
+    <dimen name="margin6X">48dp</dimen>
+
+    <dimen name="size0X">4sp</dimen>
+    <dimen name="size1X">8sp</dimen>
+    <dimen name="size2X">12sp</dimen>
+    <dimen name="size3X">16sp</dimen>
+    <dimen name="size4X">20sp</dimen>
+    <dimen name="size5X">24sp</dimen>
+    <dimen name="size6X">32sp</dimen>
+    <dimen name="size7X">48sp</dimen>
+</resources>

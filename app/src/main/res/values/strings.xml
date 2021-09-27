@@ -1,3 +1,5 @@
 <resources>
     <string name="app_name">Dictionary Application</string>
+    <string name="input_text">INPUT TEXT</string>
+    <string name="get_language">GET LANGUAGE</string>
 </resources>
