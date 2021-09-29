@@ -1,38 +1,40 @@
 package com.example.dictionaryapplication.ui
 
+import android.media.Image
 import android.os.Bundle
 import android.util.Log
 import android.widget.ArrayAdapter
 import android.widget.AutoCompleteTextView
+import android.widget.ImageView
 import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.lifecycleScope
+import com.bumptech.glide.Glide
 import com.example.dictionaryapplication.R
 import com.example.dictionaryapplication.data.Status
 import com.example.dictionaryapplication.data.network.Client
 import com.example.dictionaryapplication.data.repository.DictionaryRepository
 import com.example.dictionaryapplication.data.repository.DictionaryRepository.Setting.inputLanguage
-import com.example.dictionaryapplication.data.repository.DictionaryRepository.Setting.inputTextDetect
+import com.example.dictionaryapplication.data.repository.DictionaryRepository.Setting.inputText
 import com.example.dictionaryapplication.data.repository.DictionaryRepository.Setting.outputLanguage
-import com.example.dictionaryapplication.data.repository.DictionaryRepository.detectList
-import com.example.dictionaryapplication.data.repository.DictionaryRepository.languageList
+import com.example.dictionaryapplication.data.repository.DictionaryRepository.languageOutputList
 import com.example.dictionaryapplication.data.repository.DictionaryRepository.translateText
-import com.example.dictionaryapplication.data.response.detect.DetectData
 import com.example.dictionaryapplication.data.response.languages.LanguagesData
 import com.example.dictionaryapplication.data.response.translate.TranslateData
 import com.example.dictionaryapplication.databinding.ActivityHomeBinding
 import com.example.dictionaryapplication.util.Constant.TAG
+import com.example.dictionaryapplication.util.MyUrl
 import kotlinx.coroutines.DelicateCoroutinesApi
 import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.flowOn
 import kotlinx.coroutines.launch
+import okhttp3.*
+import java.io.IOException
 
 class HomeActivity : AppCompatActivity(){
     private lateinit var binding: ActivityHomeBinding
-    @DelicateCoroutinesApi
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         binding = ActivityHomeBinding.inflate(layoutInflater)
@@ -40,15 +42,28 @@ class HomeActivity : AppCompatActivity(){
         setup()
         callBack()
     }
-
     private fun setup() {
         getLanguageFromRequest()
     }
 
-    @DelicateCoroutinesApi
     private fun callBack() {
+        binding.setInputSpinner.setOnItemClickListener { _, _, i, _ ->
+            if (i != 0) {
+                val code = languageOutputList[i-1].code
+                inputLanguage =  requireNotNull(code)
+                imageFlagRequest(code,binding.inputImage)
+            } else {
+                inputLanguage =  "auto"
+            }
+        }
+        binding.setOutputSpinner.setOnItemClickListener { _, _, i, _ ->
+            val code = languageOutputList[i].code
+            outputLanguage = requireNotNull(code)
+            imageFlagRequest(code,binding.outputImage)
+        }
         binding.getLanguageButton.setOnClickListener {
-                getText()
+            inputText = binding.inputText.editableText.toString()
+            getTranslateFromRequest()
         }
     }
 
@@ -65,7 +80,7 @@ class HomeActivity : AppCompatActivity(){
             }
         }
     }
-    private suspend fun onLanguageResponse(response: Status<List<LanguagesData>>) {
+    private fun onLanguageResponse(response: Status<List<LanguagesData>>) {
 
         when (response) {
             is Status.Fail -> {
@@ -76,7 +91,7 @@ class HomeActivity : AppCompatActivity(){
             }
             is Status.Success -> {
                 response.data.let { DictionaryRepository.addLanguagesData(it) }
-                Log.i(TAG, languageList.joinToString { it.name.toString() })
+                Log.i(TAG, languageOutputList.toString())
 
             }
         }
@@ -98,12 +113,8 @@ class HomeActivity : AppCompatActivity(){
     }
     private fun onTranslateResponse(response: Status<TranslateData>) {
         when (response) {
-            is Status.Fail -> {
-                Log.i(TAG,"error: ${response.message}")
-            }
-            Status.Loading -> {
-                Log.i(TAG,"loading")
-            }
+            is Status.Fail -> Log.i(TAG,"error: ${response.message}")
+            Status.Loading -> Log.i(TAG,"loading")
             is Status.Success -> {
                 response.data.let { DictionaryRepository.addTranslateData(it.translatedText) }
                 Log.i(TAG, translateText[0])
@@ -112,60 +123,57 @@ class HomeActivity : AppCompatActivity(){
         }
     }
 
-    private fun getDetectFromRequest() {
-        val flow = flow {
-            val result = Client.detectRequest()
-            emit(result)
-        }.flowOn(Dispatchers.Default)
-        lifecycleScope.launch {
-            flow.catch {
-                Log.i(TAG, "fail: ${it.message}")
-            }.collect {
-                onDetectResponse(it)
-            }
-        }
-    }
-    private fun onDetectResponse(response: Status<List<DetectData>>) {
-        when (response) {
-            is Status.Fail -> {
-                Log.i(TAG,"error: ${response.message}")
-            }
-            Status.Loading -> {
-                Log.i(TAG,"loading")
-            }
-            is Status.Success -> {
-                response.data.let { DictionaryRepository.addDetectData(it) }
-                Log.i(TAG, detectList.map { it.language }.toString())
-                languageList.forEach { it1 ->
-                    val text = detectList.map { it.language }
-                    if (it1.code == text[0]){
-                        binding.outputText.text = it1.name
-                    }
-                }
-            }
-        }
-    }
-
     private fun setSpinnerState(){
-        val item = languageList.map { it.name }
-        val adapter = ArrayAdapter(this, R.layout.list_item, item)
-        (binding.inputSpinner.editText as? AutoCompleteTextView)?.setAdapter(adapter)
-        (binding.outputSpinner.editText as? AutoCompleteTextView)?.setAdapter(adapter)
-        binding.setInputSpinner.setOnItemClickListener { _, _, i, _ ->
-            inputLanguage = requireNotNull(languageList[i].code)
+        val inputItem = mutableListOf("auto")
+        languageOutputList.forEach {
+            inputItem.add(it.name.toString())
         }
-        binding.setOutputSpinner.setOnItemClickListener { _, _, i, _ ->
-            outputLanguage = requireNotNull(languageList[i].code)
-        }
+        val outputItem = languageOutputList.map { it.name }
+        val inputAdapter = ArrayAdapter(this, R.layout.list_item, inputItem)
+        val outputAdapter = ArrayAdapter(this, R.layout.list_item, outputItem)
+        (binding.inputSpinner.editText as? AutoCompleteTextView)?.setAdapter(inputAdapter)
+        (binding.outputSpinner.editText as? AutoCompleteTextView)?.setAdapter(outputAdapter)
     }
-    private fun getText(){
-//        val edit = binding.inputText.toString()
-//        inputText = edit
-//        getTranslateFromRequest()
+    private fun imageFlagRequest(flagCode: String, view: ImageView){
+        var countryCode = flagCode
+        var url = ""
+        when (countryCode) {
+            "en" -> {
+                countryCode = "gb"
+                url = "https://www.countryflags.io/$countryCode/flat/64.png"
+            }
+            "ar" -> {
+                countryCode = "iq"
+                url = "https://www.countryflags.io/$countryCode/flat/64.png"
+            }
+            "ja" -> {
+                countryCode = "jp"
+                url = "https://www.countryflags.io/$countryCode/flat/64.png"
+            }
+            "ko" -> {
+                countryCode = "kr"
+                url = "https://www.countryflags.io/$countryCode/flat/64.png"
+            }
+            "zh" -> {
+                countryCode = "cn"
+                url = "https://www.countryflags.io/$countryCode/flat/64.png"
+            }
+            "hi" -> {
+                countryCode = "in"
+                url = "https://www.countryflags.io/$countryCode/flat/64.png"
+            }
+            "vi" -> {
+                countryCode = "vn"
+                url = "https://www.countryflags.io/$countryCode/flat/64.png"
+            }
+            else -> {
+                url = "https://www.countryflags.io/$countryCode/flat/64.png"
+            }
+        }
+            Glide.with(this).load(url)
+                .placeholder(R.drawable.ic_baseline_cloud_download_24)
+                .error(R.drawable.ic_baseline_error)
+                .into(view)
 
-        val detectEdit = binding.detectInputText.text
-        inputTextDetect = detectEdit.toString()
-        Log.i(TAG, inputTextDetect)
-        getDetectFromRequest()
     }
 }
