@@ -1,6 +1,5 @@
 package com.example.dictionaryapplication.ui
 
-import android.media.Image
 import android.os.Bundle
 import android.util.Log
 import android.widget.ArrayAdapter
@@ -18,12 +17,11 @@ import com.example.dictionaryapplication.data.repository.DictionaryRepository.Se
 import com.example.dictionaryapplication.data.repository.DictionaryRepository.Setting.outputLanguage
 import com.example.dictionaryapplication.data.repository.DictionaryRepository.languageOutputList
 import com.example.dictionaryapplication.data.repository.DictionaryRepository.translateText
+import com.example.dictionaryapplication.data.detect.DetectData
 import com.example.dictionaryapplication.data.response.languages.LanguagesData
 import com.example.dictionaryapplication.data.response.translate.TranslateData
 import com.example.dictionaryapplication.databinding.ActivityHomeBinding
 import com.example.dictionaryapplication.util.Constant.TAG
-import com.example.dictionaryapplication.util.MyUrl
-import kotlinx.coroutines.DelicateCoroutinesApi
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.flow.collect
@@ -31,10 +29,10 @@ import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.flowOn
 import kotlinx.coroutines.launch
 import okhttp3.*
-import java.io.IOException
 
 class HomeActivity : AppCompatActivity(){
     private lateinit var binding: ActivityHomeBinding
+    private var detectText = ""
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         binding = ActivityHomeBinding.inflate(layoutInflater)
@@ -54,6 +52,11 @@ class HomeActivity : AppCompatActivity(){
                 imageFlagRequest(code,binding.inputImage)
             } else {
                 inputLanguage =  "auto"
+                binding.getLanguageButton.setOnClickListener {
+                    inputText = binding.inputText.editableText.toString()
+                    getDetectFromRequest(inputText)
+                    getTranslateFromRequest()
+                }
             }
         }
         binding.setOutputSpinner.setOnItemClickListener { _, _, i, _ ->
@@ -61,10 +64,7 @@ class HomeActivity : AppCompatActivity(){
             outputLanguage = requireNotNull(code)
             imageFlagRequest(code,binding.outputImage)
         }
-        binding.getLanguageButton.setOnClickListener {
-            inputText = binding.inputText.editableText.toString()
-            getTranslateFromRequest()
-        }
+
     }
 
     private fun getLanguageFromRequest() {
@@ -120,6 +120,36 @@ class HomeActivity : AppCompatActivity(){
                 Log.i(TAG, translateText[0])
                 binding.outputText.text = translateText[0]
             }
+        }
+    }
+    private fun getDetectFromRequest(code: String) {
+        val flow = flow {
+            val result = Client.detectRequest(code)
+            emit(result)
+        }.flowOn(Dispatchers.Default)
+        lifecycleScope.launch {
+            flow.catch {
+                Log.i(TAG, "fail: ${it.message}")
+            }.collect {
+                onDetectResponse(it)
+            }
+        }
+    }
+    private fun onDetectResponse(response: Status<List<DetectData>>) {
+        when (response) {
+            is Status.Fail -> {
+                Log.i(TAG,"error: ${response.message}")
+            }
+            Status.Loading -> {
+                Log.i(TAG,"loading")
+            }
+            is Status.Success -> {
+                detectText = ""
+                detectText = response.data[0].language.toString()
+                Log.i(TAG,detectText)
+                imageFlagRequest(detectText,binding.inputImage)
+                }
+
         }
     }
 
