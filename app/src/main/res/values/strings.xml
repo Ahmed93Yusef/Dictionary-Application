@@ -3,4 +3,5 @@
     <string name="input_text">Input Text</string>
     <string name="translator">Translator</string>
     <string name="translate">Translate</string>
+    <string name="loading">loading...</string>
 </resources>
