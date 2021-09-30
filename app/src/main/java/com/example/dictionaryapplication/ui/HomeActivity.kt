@@ -98,7 +98,7 @@ class HomeActivity : AppCompatActivity() {
                     blueView.isVisible = false
                     translatorText.isVisible = false
                     loading.apply {
-                        slideVisibility(visibility = true,750)
+                        slideVisibility(visibility = true, 750)
                         setAnimation(R.raw.no_connection)
                         playAnimation()
                     }
@@ -107,7 +107,7 @@ class HomeActivity : AppCompatActivity() {
             }
             Status.Loading -> {
                 itemList.forEach {
-                    it.slideVisibility(false,750)
+                    it.slideVisibility(false, 750)
                 }
                 binding.apply {
                     blueView.isVisible = false
@@ -168,7 +168,7 @@ class HomeActivity : AppCompatActivity() {
                 binding.loading.apply {
                     setAnimation(R.raw.loading)
                     playAnimation()
-                    slideVisibility(visibility = true,750)
+                    slideVisibility(visibility = true, 750)
                 }
                 binding.outputText.text = getString(R.string.loading)
                 Log.i(TAG, "translate loading")
