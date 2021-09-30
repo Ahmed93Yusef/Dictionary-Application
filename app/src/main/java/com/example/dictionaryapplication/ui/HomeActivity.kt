@@ -26,7 +26,6 @@ import com.example.dictionaryapplication.databinding.ActivityHomeBinding
 import com.example.dictionaryapplication.util.Constant.TAG
 import com.example.dictionaryapplication.util.slideVisibility
 import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.flow.flow
