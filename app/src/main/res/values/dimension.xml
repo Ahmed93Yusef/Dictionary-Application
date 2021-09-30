@@ -1,5 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
+
+    // margin and padding dimensions
     <dimen name="margin0X">4dp</dimen>
     <dimen name="margin1X">8dp</dimen>
     <dimen name="margin2X">16dp</dimen>
@@ -8,6 +10,7 @@
     <dimen name="margin5X">40dp</dimen>
     <dimen name="margin6X">48dp</dimen>
 
+    // text size dimensions
     <dimen name="size0X">4sp</dimen>
     <dimen name="size1X">8sp</dimen>
     <dimen name="size2X">12sp</dimen>
@@ -16,4 +19,5 @@
     <dimen name="size5X">24sp</dimen>
     <dimen name="size6X">32sp</dimen>
     <dimen name="size7X">48sp</dimen>
+
 </resources>

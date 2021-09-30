@@ -13,13 +13,15 @@ object Constant {
     const val LANGUAGES_PATH = "languages"
     const val TRANSLATE_PATH = "translate"
     const val DETECT_PATH = "detect"
-    const val TAG = "MAIN_ACTIVITY"
+    const val TAG = "AHMED_YUSEF"
 }
+
 object Parameters {
     const val INPUT_TEXT = "q"
     const val INPUT_LANGUAGE = "source"
     const val OUTPUT_LANGUAGE = "target"
 }
+
 object MyUrl {
     val myLanguagesUrl = HttpUrl.Builder()
         .scheme(SCHEME)

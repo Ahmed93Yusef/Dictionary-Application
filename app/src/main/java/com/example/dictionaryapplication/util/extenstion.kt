@@ -11,7 +11,7 @@ import androidx.transition.TransitionManager
 /**
  * Make slide animation on change view visibility
  * @author     Ahmed Yusef
- * @see        <a href="https://stackoverflow.com/a/67856091/16375959">Stakoverfolw Answer</a>
+ * @see        <a href="https://stackoverflow.com/a/67856091/16375959">StackOverFlow Answer</a>
  * @return     Unit
  * */
 fun View.slideVisibility(visibility: Boolean, duration: Long = 350, gravity: Int = Gravity.BOTTOM) {
