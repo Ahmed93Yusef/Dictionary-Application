@@ -13,9 +13,9 @@ object DataManager {
     }
 
     object Setting {
-        var inputText: String = ""
-        var inputLanguage: String = ""
-        var outputLanguage: String = ""
+        var inputText: String = "hello"
+        var inputLanguage: String = "en"
+        var outputLanguage: String = "es"
         var detectText = ""
         var textTranslate = ""
     }
