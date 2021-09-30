@@ -1,5 +1,5 @@
 <resources>
-    <string name="app_name">Dictionary Application</string>
+    <string name="app_name">Translator</string>
     <string name="input_text">Input Text</string>
     <string name="translator">Translator</string>
     <string name="translate">Translate</string>

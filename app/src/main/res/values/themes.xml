@@ -19,4 +19,5 @@
         <item name="colorPrimary">@color/blue</item>
         <item name="android:radius">@dimen/margin2X</item>
     </style>
+
 </resources>

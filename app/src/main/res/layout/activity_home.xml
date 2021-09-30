@@ -49,7 +49,7 @@
         android:layout_height="0dp"
         android:layout_marginHorizontal="@dimen/margin2X"
         android:layout_marginTop="@dimen/margin4X"
-        android:background="@color/white"
+        android:backgroundTint="@color/white"
         android:elevation="@dimen/margin1X"
         app:cardCornerRadius="@dimen/margin2X"
         app:layout_constraintBottom_toTopOf="@id/output_card"
@@ -58,10 +58,9 @@
     <ImageView
         android:id="@+id/input_image"
         android:layout_width="80dp"
-        android:layout_height="0dp"
+        android:layout_height="60dp"
         android:layout_marginEnd="@dimen/margin5X"
         android:elevation="@dimen/margin2X"
-        app:layout_constraintBottom_toBottomOf="@id/input_spinner"
         app:layout_constraintEnd_toEndOf="@id/input_spinner"
         app:layout_constraintTop_toTopOf="@id/input_spinner"
         tools:ignore="ContentDescription" />
@@ -73,6 +72,9 @@
         android:layout_height="wrap_content"
         android:layout_margin="@dimen/margin2X"
         android:elevation="@dimen/margin1X"
+        app:boxBackgroundColor="@color/light_blue"
+        app:helperText="Select Input Language"
+        app:helperTextEnabled="true"
         app:layout_constraintEnd_toEndOf="@id/input_card"
         app:layout_constraintStart_toStartOf="@id/input_card"
         app:layout_constraintTop_toTopOf="@id/input_card"
@@ -83,7 +85,9 @@
             android:id="@+id/set_input_spinner"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
+            android:backgroundTint="@color/light_blue"
             android:inputType="none"
+            android:textColor="@color/black"
             tools:ignore="LabelFor" />
     </com.google.android.material.textfield.TextInputLayout>
 
@@ -91,14 +95,15 @@
         android:id="@+id/detect_text"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:layout_marginEnd="@dimen/margin3X"
         android:elevation="@dimen/margin2X"
         android:textColor="@color/black"
         android:textSize="@dimen/size3X"
         android:textStyle="bold"
-        app:layout_constraintBottom_toBottomOf="@id/input_spinner"
+        app:layout_constraintBottom_toBottomOf="@id/input_image"
         app:layout_constraintEnd_toEndOf="@id/input_spinner"
         app:layout_constraintStart_toStartOf="@id/input_spinner"
-        app:layout_constraintTop_toTopOf="@id/input_spinner"
+        app:layout_constraintTop_toTopOf="@id/input_image"
         tools:text="Arabic" />
 
     <com.google.android.material.textfield.TextInputLayout
@@ -113,6 +118,7 @@
         android:textColor="@color/black"
         android:textSize="@dimen/size4X"
         android:textStyle="bold"
+        app:endIconMode="clear_text"
         app:layout_constraintBottom_toBottomOf="@id/input_card"
         app:layout_constraintEnd_toEndOf="@id/input_card"
         app:layout_constraintStart_toStartOf="@id/input_spinner"
@@ -122,7 +128,8 @@
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:layout_marginBottom="@dimen/margin2X"
-            android:gravity="start" />
+            android:gravity="start"
+            android:textColor="@color/black" />
     </com.google.android.material.textfield.TextInputLayout>
 
     <androidx.cardview.widget.CardView
@@ -131,7 +138,7 @@
         android:layout_height="0dp"
         android:layout_marginHorizontal="@dimen/margin2X"
         android:layout_marginTop="@dimen/margin1X"
-        android:background="@color/white"
+        android:backgroundTint="@color/white"
         android:elevation="8dp"
         app:cardCornerRadius="@dimen/margin2X"
         app:layout_constraintBottom_toTopOf="@id/get_language_button"
@@ -140,10 +147,9 @@
     <ImageView
         android:id="@+id/output_image"
         android:layout_width="80dp"
-        android:layout_height="0dp"
+        android:layout_height="60dp"
         android:layout_marginEnd="@dimen/margin5X"
         android:elevation="@dimen/margin2X"
-        app:layout_constraintBottom_toBottomOf="@id/output_spinner"
         app:layout_constraintEnd_toEndOf="@id/output_spinner"
         app:layout_constraintTop_toTopOf="@id/output_spinner"
         tools:ignore="ContentDescription" />
@@ -155,6 +161,9 @@
         android:layout_height="wrap_content"
         android:layout_margin="@dimen/margin2X"
         android:elevation="@dimen/margin1X"
+        app:boxBackgroundColor="@color/light_blue"
+        app:helperText="Select Output Language"
+        app:helperTextEnabled="true"
         app:layout_constraintEnd_toEndOf="@id/output_card"
         app:layout_constraintStart_toStartOf="@id/output_card"
         app:layout_constraintTop_toTopOf="@id/output_card"
@@ -165,7 +174,10 @@
             android:id="@+id/set_output_spinner"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
+            android:backgroundTint="@color/light_blue"
             android:inputType="none"
+            android:textColor="@color/black"
+
             tools:ignore="LabelFor" />
 
     </com.google.android.material.textfield.TextInputLayout>

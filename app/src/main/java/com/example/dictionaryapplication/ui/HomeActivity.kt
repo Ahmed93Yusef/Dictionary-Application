@@ -102,7 +102,6 @@ class HomeActivity : AppCompatActivity() {
                         playAnimation()
                     }
                 }
-
                 Log.i(TAG, "language error: ${response.message}")
             }
             Status.Loading -> {
@@ -131,7 +130,6 @@ class HomeActivity : AppCompatActivity() {
                 }
                 response.data.let { DataManager.addLanguagesData(it) }
                 Log.i(TAG, "list of language : $languageOutputList")
-
             }
         }
         setSpinnerState()
@@ -145,6 +143,7 @@ class HomeActivity : AppCompatActivity() {
     private fun getTranslateFromRequest() {
         val flow = flow {
             val result = Client.translateRequest()
+            emit(Status.Loading)
             emit(result)
         }.flowOn(Dispatchers.Default)
         lifecycleScope.launch {
@@ -164,11 +163,21 @@ class HomeActivity : AppCompatActivity() {
     private fun onTranslateResponse(response: Status<TranslateData>) {
         when (response) {
             is Status.Fail -> Log.i(TAG, "translate error: ${response.message}")
-            Status.Loading -> Log.i(TAG, "translate loading")
+            Status.Loading -> {
+                binding.loading.apply {
+                    setAnimation(R.raw.loading)
+                    playAnimation()
+                    slideVisibility(visibility = true)
+                }
+                Log.i(TAG, "translate loading")
+            }
             is Status.Success -> {
                 textTranslate = response.data.let { it.translatedText.toString() }
                 Log.i(TAG, "text translated : $textTranslate")
-                binding.outputText.text = textTranslate
+                binding.apply {
+                    loading.slideVisibility(false)
+                    outputText.text = textTranslate
+                }
             }
         }
     }
@@ -181,6 +190,7 @@ class HomeActivity : AppCompatActivity() {
     private fun getDetectFromRequest(code: String) {
         val flow = flow {
             val result = Client.detectRequest(code)
+            emit(Status.Loading)
             emit(result)
         }.flowOn(Dispatchers.Default)
         lifecycleScope.launch {
@@ -199,13 +209,17 @@ class HomeActivity : AppCompatActivity() {
      * */
     private fun onDetectResponse(response: Status<List<DetectData>>) {
         when (response) {
-            is Status.Fail -> {
-                Log.i(TAG, "detect error: ${response.message}")
-            }
+            is Status.Fail -> Log.i(TAG, "detect error: ${response.message}")
             Status.Loading -> {
+                binding.loading.apply {
+                    setAnimation(R.raw.loading)
+                    playAnimation()
+                    slideVisibility(visibility = true)
+                }
                 Log.i(TAG, "detect loading")
             }
             is Status.Success -> {
+                binding.loading.slideVisibility(false)
                 detectText = response.data[0].language.toString()
                 inputLanguage = detectText
                 Log.i(TAG, "detect language: $detectText")
